@@ -1,4 +1,4 @@
-package cn.lqs.flink.manager.config;
+package cn.lqs.flink.yarn.admin.hdfs;
 
 public class FailLoadConfigurationException extends Exception{
 

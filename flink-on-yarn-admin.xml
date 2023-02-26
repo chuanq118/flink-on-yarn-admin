@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- web server port -->
+  <property>
+    <name>server.port</name>
+    <value>8888</value>
+  </property>
+  <!-- web server host -->
+  <property>
+    <name>server.host</name>
+    <value/>
+  </property>
+
+  <!-- 在没有 hadoop 环境的机器配置此项 | 空目录最好 -->
+  <property>
+    <name>hadoop.home.dir</name>
+    <value>C:\Users\legen\Documents\temp\hadoop_home</value>
+  </property>
+  <!-- HDFS 用户访问权限 -->
+  <property>
+    <name>hadoop.user.name</name>
+    <value>hadoop</value>
+  </property>
+  <!-- HDFS 服务地址 -->
+  <property>
+    <name>hdfs.address</name>
+    <value>hdfs://chuanq-server:8020</value>
+  </property>
+
+</configuration>
