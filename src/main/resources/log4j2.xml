@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Properties>
+    <Property name="STD_PAT">%d{yyyy-MM-dd HH:mm:ss} [%thread] %logger{1}\n-> %-5level | %msg%n</Property>
+  </Properties>
+
+  <Appenders>
+    <!--这个输出控制台的配置-->
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <!--输出日志的格式-->
+      <PatternLayout pattern="${STD_PAT}" />
+    </Console>
+  </Appenders>
+
+  <Loggers>
+    <Root level="debug">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+  </Loggers>
+
+</Configuration>
