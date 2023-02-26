@@ -2,6 +2,7 @@ package cn.lqs.flink.yarn.admin.hdfs;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
@@ -59,5 +60,7 @@ public class HdfsJarManager {
     return hdfsAddr + uploadPt.toUri().toString();
   }
 
-
+  public FileStatus[] listJar() throws IOException {
+     return hdfs.listStatus(new Path(JAR_UPLOAD_PATH));
+  }
 }

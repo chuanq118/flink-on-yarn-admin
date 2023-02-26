@@ -1,4 +1,4 @@
-package cn.lqs.flink.yarn.admin.http;
+package cn.lqs.flink.yarn.admin.http.entity;
 
 import io.vertx.ext.web.FileUpload;
 

@@ -1,6 +1,9 @@
 package cn.lqs.flink.yarn.admin.http;
 
 import cn.lqs.flink.yarn.admin.hdfs.HdfsJarManager;
+import cn.lqs.flink.yarn.admin.http.handler.AppConfigHandler;
+import cn.lqs.flink.yarn.admin.http.handler.JarListHandler;
+import cn.lqs.flink.yarn.admin.http.handler.JarUploadHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
@@ -24,15 +27,20 @@ public class ApplicationRoutes {
     handleCors(router);
     // 配置静态 web ui
     handleWebui(router);
+
+    // hdfs jar manager
+    HdfsJarManager hdfsJarManager = HdfsJarManager.create(conf);
     // 打印配置信息
     router.get(PREFIX + "/app/config")
       .respond(new AppConfigHandler(conf));
+    router.get(PREFIX + "/jar/list")
+      .respond(new JarListHandler(hdfsJarManager));
 
     // 在 post 请求前安装对请求体的处理器
     router.post(PREFIX + "/*").handler(BodyHandler.create());
     // add jar file upload handler
     router.post(PREFIX + "/jar/upload")
-      .blockingHandler(new JarUploadHandler(HdfsJarManager.create(conf)));
+      .blockingHandler(new JarUploadHandler(hdfsJarManager));
 
     // 默认此处返回所有的错误信息 -> 可更换到 FailureHandler(自定义)
     router.route(PREFIX + "/*").failureHandler(ErrorHandler.create(vertx, true));

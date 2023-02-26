@@ -1,4 +1,4 @@
-package cn.lqs.flink.yarn.admin.http;
+package cn.lqs.flink.yarn.admin.http.handler;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;

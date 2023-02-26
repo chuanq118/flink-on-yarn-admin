@@ -1,6 +1,7 @@
-package cn.lqs.flink.yarn.admin.http;
+package cn.lqs.flink.yarn.admin.http.handler;
 
 import cn.lqs.flink.yarn.admin.hdfs.HdfsJarManager;
+import cn.lqs.flink.yarn.admin.http.entity.JarUploadedFileInfo;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
