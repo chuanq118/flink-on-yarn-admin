@@ -7,6 +7,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.ErrorHandler;
+import io.vertx.ext.web.handler.StaticHandler;
 import org.apache.hadoop.conf.Configuration;
 
 import java.io.IOException;
@@ -15,23 +16,26 @@ import java.util.Set;
 
 public class ApplicationRoutes {
 
+  private final static String PREFIX = "/api";
+
   public static Router build(Vertx vertx, Configuration conf) throws IOException {
     Router router = Router.router(vertx);
     // 允许 GET POST 所有的跨域
     handleCors(router);
-
+    // 配置静态 web ui
+    handleWebui(router);
     // 打印配置信息
-    router.get("/app/config")
+    router.get(PREFIX + "/app/config")
       .respond(new AppConfigHandler(conf));
 
     // 在 post 请求前安装对请求体的处理器
-    router.post().handler(BodyHandler.create());
+    router.post(PREFIX + "/*").handler(BodyHandler.create());
     // add jar file upload handler
-    router.post("/jar/upload")
+    router.post(PREFIX + "/jar/upload")
       .blockingHandler(new JarUploadHandler(HdfsJarManager.create(conf)));
 
     // 默认此处返回所有的错误信息 -> 可更换到 FailureHandler(自定义)
-    router.route("/*").failureHandler(ErrorHandler.create(vertx, true));
+    router.route(PREFIX + "/*").failureHandler(ErrorHandler.create(vertx, true));
 
     return router;
   }
@@ -45,6 +49,10 @@ public class ApplicationRoutes {
       .allowedHeader("*")
       .allowedMethods(allowedHttpMethods)
       .exposedHeader("*").maxAgeSeconds(3600));
+  }
+
+  private static void handleWebui(Router router) {
+    router.route("/ui/*").handler(StaticHandler.create("ui"));
   }
 
 }

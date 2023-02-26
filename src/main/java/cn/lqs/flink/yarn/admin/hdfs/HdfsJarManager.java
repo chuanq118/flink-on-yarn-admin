@@ -37,7 +37,13 @@ public class HdfsJarManager {
     return hdfs;
   }
 
-
+  /**
+   * upload jar to hdfs
+   * @param jarF jar file
+   * @param resolvePath jar pt
+   * @return abs path
+   * @throws IOException io exception
+   */
   public String uploadJar(File jarF, String resolvePath) throws IOException {
     resolvePath = resolvePath.startsWith("/") ? resolvePath : "/" + resolvePath;
     Path uploadPt = new Path(JAR_UPLOAD_PATH + resolvePath);

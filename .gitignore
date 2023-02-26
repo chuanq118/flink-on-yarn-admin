@@ -219,3 +219,5 @@ webui/*.njsproj
 webui/*.sln
 webui/*.sw?
 
+ui/
+
