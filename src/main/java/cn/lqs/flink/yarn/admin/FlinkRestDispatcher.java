@@ -28,7 +28,7 @@ public class FlinkRestDispatcher extends AbstractVerticle {
       .listen(Integer.parseInt(GlobalConfig.get(SERVER_PORT)), GlobalConfig.get(SERVER_HOST),
         http -> {
           if (http.succeeded()) {
-            log.info("Server start successfully! -> [{}:{}]", GlobalConfig.get(SERVER_PORT), GlobalConfig.get(SERVER_HOST));
+            log.info("Server start successfully! -> [{}:{}]", GlobalConfig.get(SERVER_HOST), GlobalConfig.get(SERVER_PORT));
             promise.complete();
           } else {
             log.error("Server start failed!", http.cause());
