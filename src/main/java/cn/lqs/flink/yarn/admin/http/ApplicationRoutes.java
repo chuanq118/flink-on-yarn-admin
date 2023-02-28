@@ -3,11 +3,9 @@ package cn.lqs.flink.yarn.admin.http;
 import cn.lqs.flink.yarn.admin.hdfs.FailLoadConfigurationException;
 import cn.lqs.flink.yarn.admin.hdfs.FlinkScriptManager;
 import cn.lqs.flink.yarn.admin.hdfs.HdfsJarManager;
+import cn.lqs.flink.yarn.admin.hdfs.YarnManager;
 import cn.lqs.flink.yarn.admin.http.entity.FlinkRunRequestBody;
-import cn.lqs.flink.yarn.admin.http.handler.AppConfigHandler;
-import cn.lqs.flink.yarn.admin.http.handler.FlinkRunHandler;
-import cn.lqs.flink.yarn.admin.http.handler.JarListHandler;
-import cn.lqs.flink.yarn.admin.http.handler.JarUploadHandler;
+import cn.lqs.flink.yarn.admin.http.handler.*;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -36,11 +34,15 @@ public class ApplicationRoutes {
     // hdfs-jar / flink manager
     HdfsJarManager hdfsJarManager = HdfsJarManager.create(conf);
     FlinkScriptManager flinkScriptManager = FlinkScriptManager.parseFrom(conf);
+    YarnManager yarnManager = new YarnManager(conf);
+
     // 打印配置信息
     router.get(PREFIX + "/app/config")
       .respond(new AppConfigHandler(conf));
     router.get(PREFIX + "/jar/list")
       .respond(new JarListHandler(hdfsJarManager));
+    router.get(PREFIX + "/flink/applications")
+      .respond(new YarnFlinkAppListHandler(yarnManager));
 
     // 在 post 请求前安装对请求体的处理器
     router.post(PREFIX + "/*").handler(BodyHandler.create());

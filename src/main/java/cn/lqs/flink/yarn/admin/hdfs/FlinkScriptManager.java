@@ -5,15 +5,23 @@ import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static cn.lqs.flink.yarn.admin.hdfs.ConfigurationLoader.FLINK_HOME;
 
 public class FlinkScriptManager {
 
   private final static Logger log = LoggerFactory.getLogger(FlinkScriptManager.class);
+
+  private final static Pattern APPLICATION_INFO_PAT = Pattern.compile("Found Web Interface (.*?) of application '(.*?)'\\.", Pattern.DOTALL);
+
 
   private final String flink;
 
@@ -21,16 +29,12 @@ public class FlinkScriptManager {
     this.flink = flink;
   }
 
-  public static FlinkScriptManager parseFrom(Configuration cfg) throws FailLoadConfigurationException {
-    String flinkHome = cfg.get("flink.home", System.getProperty("FLINK_HOME"));
-    if (flinkHome == null) {
-      throw new FailLoadConfigurationException("null flink.home");
-    }
-    return new FlinkScriptManager(Path.of(flinkHome, "bin", "flink").toAbsolutePath().toString());
+  public static FlinkScriptManager parseFrom(Configuration cfg)  {
+    return new FlinkScriptManager(Path.of(cfg.get(FLINK_HOME), "bin", "flink").toAbsolutePath().toString());
   }
 
 
-  public FlinkRunResult runJar(FlinkRunRequestBody flinkRunRequestBody) throws IOException {
+  public FlinkRunResult runJar(FlinkRunRequestBody flinkRunRequestBody, int maxSeconds) throws IOException {
     String[] cmd = new String[]{flink, "run-application", "-t", "yarn-application",
       flinkRunRequestBody.getJarPath().trim(), "--config", "@path/to/json"};
     Process startingProcess = Runtime.getRuntime().exec(cmd);
@@ -39,57 +43,61 @@ public class FlinkScriptManager {
       info.user(), info.command().orElse(""), info.commandLine().orElse(""));
     try {
       startingProcess.getOutputStream().close();
+      final FlinkRunResult result = new FlinkRunResult();
       // output
       log.info("try collect error / std output...");
-      FutureTask<String> errorF = getOutput(startingProcess.getErrorStream());
-      errorF.run();
-      FutureTask<String> stdF = getOutput(startingProcess.getInputStream());
-      stdF.run();
 
-      FlinkRunResult result = new FlinkRunResult();
-      try {
-        log.info("waiting err output...");
-        String errStr = errorF.get().trim();
-        if (ApplicationUtils.hasText(errStr)) {
-          log.error("{}", errStr);
-          result.setHasError(true);
-          result.setErrOutput(errStr);
-        }
-      } catch (ExecutionException | InterruptedException e) {
-        log.error("get error stream error!", e);
-      }
-
-      try {
+      new Thread(() -> {
         log.info("waiting std output...");
-        String stdStr = stdF.get().trim();
-        log.info("{}", stdStr);
-        result.setStdOutput(stdStr);
-      } catch (ExecutionException | InterruptedException e) {
-        log.error("get std stream error!", e);
-      }
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(startingProcess.getInputStream()))) {
+          String line;
+          ArrayList<String> infos = new ArrayList<>(1 << 5);
+          while ((line = br.readLine()) != null) {
+            infos.add(line);
+            log.info("{}", line);
+            Matcher mat = APPLICATION_INFO_PAT.matcher(line);
+            if (mat.find()) {
+              result.setWebInterface(mat.group(1));
+              result.setApplicationId(mat.group(2));
+            }
+          }
+          result.setStdOutput(infos);
+        } catch (IOException e) {
+          log.error("read input stream error!", e);
+        }
+      }).start();
+
+      new Thread(() -> {
+        log.info("waiting err output...");
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(startingProcess.getErrorStream()))) {
+          String line;
+          ArrayList<String> errs = new ArrayList<>(1 << 5);
+          while ((line = br.readLine()) != null) {
+            log.warn("{}", line);
+            errs.add(line);
+          }
+          result.setErrOutput(errs);
+        } catch (IOException e) {
+          log.error("read error stream error!", e);
+        }
+      }).start();
 
       try {
-        startingProcess.waitFor();
+        boolean ok = startingProcess.waitFor(maxSeconds, TimeUnit.SECONDS);
+        if (!ok) {
+          result.setOvertime(true);
+        }
       } catch (InterruptedException e) {
         log.error("process is killed!", e);
       }
-
+      log.info("return running result!");
       return result;
     }finally {
       if (startingProcess.isAlive()) {
+        log.warn("kill process [{}]", startingProcess.pid());
         startingProcess.destroy();
       }
     }
   }
 
-  private FutureTask<String> getOutput(InputStream is) {
-    return new FutureTask<String>(() -> {
-      try {
-        return new String(is.readAllBytes());
-      } catch (IOException e) {
-        log.error("读取 flink run error stream fail!", e);
-      }
-      return null;
-    });
-  }
 }

@@ -26,6 +26,7 @@ public final class ConfigurationLoader {
   public static final String HDFS_ADDRESS = "hdfs.address";
   public static final String HADOOP_HOME = "hadoop.home.dir";
   public static final String HADOOP_USER_NAME = "hadoop.user.name";
+  public static final String FLINK_HOME = "flink.home";
 
   public static Configuration load() throws FailLoadConfigurationException {
     Configuration config = new Configuration();
@@ -34,6 +35,7 @@ public final class ConfigurationLoader {
     // 配置控制权限
     setHadoopHome(config);
     setHadoopUsername(config);
+    setFlinkHome(config);
     // 配置 hdfs 访问地址
     setHdfsAddress(config);
     // 配置 web server
@@ -60,6 +62,17 @@ public final class ConfigurationLoader {
       }
     }
     return xml;
+  }
+
+  private static void  setFlinkHome(Configuration cfg) throws FailLoadConfigurationException {
+    String flinkHome = cfg.get(FLINK_HOME);
+    if (flinkHome == null) {
+      flinkHome = System.getProperty("FLINK_HOME");
+    }
+    if (!hasText(flinkHome)) {
+      throw new FailLoadConfigurationException("can't find flink home!");
+    }
+    cfg.set(FLINK_HOME, flinkHome);
   }
 
   private static void  setHadoopHome(Configuration cfg) throws FailLoadConfigurationException {

@@ -25,6 +25,7 @@ public class AppConfigHandler implements Function<RoutingContext, Future<JsonObj
     json.put(HDFS_ADDRESS, conf.get(HDFS_ADDRESS));
     json.put(HADOOP_HOME, conf.get(HADOOP_HOME));
     json.put(HADOOP_USER_NAME, conf.get(HADOOP_USER_NAME));
+    json.put(FLINK_HOME, conf.get(FLINK_HOME));
     return Future.succeededFuture(json);
   }
 

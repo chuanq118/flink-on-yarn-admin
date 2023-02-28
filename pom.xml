@@ -95,6 +95,16 @@
     </dependency>
 
     <!-- ################################################
+                       hadoop yarn
+        ################################################ -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-yarn-client</artifactId>
+      <version>${hadoop.version}</version>
+    </dependency>
+
+
+    <!-- ################################################
                        vertx
       ################################################ -->
     <dependency>

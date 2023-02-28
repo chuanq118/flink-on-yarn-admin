@@ -1,6 +1,5 @@
 package cn.lqs.flink.yarn.admin.http.handler;
 
-import cn.lqs.flink.yarn.admin.hdfs.ApplicationUtils;
 import cn.lqs.flink.yarn.admin.hdfs.FlinkRunResult;
 import cn.lqs.flink.yarn.admin.hdfs.FlinkScriptManager;
 import cn.lqs.flink.yarn.admin.http.entity.FlinkRunRequestBody;
@@ -11,8 +10,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FlinkRunHandler implements Handler<RoutingContext> {
 
@@ -22,7 +19,6 @@ public class FlinkRunHandler implements Handler<RoutingContext> {
     this.flinkScriptManager = flinkScriptManager;
   }
 
-  private final static Pattern APPLICATION_INFO_PAT = Pattern.compile("Found Web Interface (.*?) of application '(.*?)'\\.", Pattern.DOTALL);
 
   @Override
   public void handle(RoutingContext event) {
@@ -36,10 +32,7 @@ public class FlinkRunHandler implements Handler<RoutingContext> {
       return;
     }
     try {
-      FlinkRunResult result = flinkScriptManager.runJar(flinkRunRequestBody);
-      if (ApplicationUtils.hasText(result.getStdOutput())) {
-        extract(result.getStdOutput(), result);
-      }
+      FlinkRunResult result = flinkScriptManager.runJar(flinkRunRequestBody, 30);
       event.response()
         .putHeader(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON)
         .end(JsonObject.mapFrom(result).encode());
@@ -49,14 +42,5 @@ public class FlinkRunHandler implements Handler<RoutingContext> {
 
   }
 
-  private void extract(String output, FlinkRunResult result) {
-    Matcher matcher = APPLICATION_INFO_PAT.matcher(output);
-    if (matcher.find()) {
-      String webInterface = matcher.group(1);
-      String id = matcher.group(2);
-      result.setWebInterface(webInterface);
-      result.setApplicationId(id);
-    }
-  }
 
 }
