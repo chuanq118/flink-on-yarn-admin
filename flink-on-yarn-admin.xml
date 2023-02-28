@@ -10,6 +10,11 @@
     <name>server.host</name>
     <value/>
   </property>
+  <!-- flink 脚本位置 -->
+  <property>
+    <name>flink.home</name>
+    <value></value>
+  </property>
 
   <!-- 在没有 hadoop 环境的机器配置此项 | 空目录最好 -->
   <property>
