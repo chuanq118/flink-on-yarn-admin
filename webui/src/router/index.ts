@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import JarManagement from "@/views/JarManagement.vue"
+import ApplicationManagement from "@/views/ApplicationManagement.vue"
 
 
 const router = createRouter({
@@ -7,13 +8,13 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'jar',
-      component: JarManagement
+      name: 'application',
+      component: ApplicationManagement
     },
     {
-      path: '/application',
-      name: 'application',
-      component: () => import('../views/ApplicationManagement.vue')
+      path: '/jar',
+      name: 'jar',
+      component: JarManagement
     }
   ]
 })

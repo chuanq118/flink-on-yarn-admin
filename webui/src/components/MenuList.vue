@@ -4,10 +4,10 @@
   </el-row>
   <el-menu class="top-menu" mode="horizontal" default-active="/" :router="true">
     <el-menu-item index="/">
-      <span>Jar 管理</span>
+      <span>FlinkOnYarn 任务管理</span>
     </el-menu-item>
-    <el-menu-item index="/application">
-      <span>应用启动</span>
+    <el-menu-item index="/jar">
+      <span>Jar 管理</span>
     </el-menu-item>
   </el-menu>
 </template>

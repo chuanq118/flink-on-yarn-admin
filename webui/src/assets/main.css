@@ -13,3 +13,33 @@
   width: 100px;
   z-index: 9;
 }
+
+#flink-yarn-table-block{
+  padding: 0 20px;
+}
+
+
+.flink-yarn-table-controller{
+  height: 80px;
+  width: 100%;
+  padding-left: 30px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.my-el-link{
+  color: dodgerblue;
+  letter-spacing: 1px;
+  font-size: 15px;
+  text-shadow: 1px 1px 1px silver;
+  background-color: rgba(196,196,196, 0.1);
+  padding: 5px;
+  border-radius: 8px;
+}
+
+.el-radio-button .el-radio-button__inner{
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}

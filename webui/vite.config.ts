@@ -14,5 +14,14 @@ export default defineConfig({
   base: "/ui",
   build: {
     outDir: "../ui"
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://lqservice.cn:8888/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      },
+    }
   }
 })

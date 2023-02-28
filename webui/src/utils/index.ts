@@ -10,6 +10,12 @@ export function handlePageResize(){
     if (AppEle != null) {
         AppEle.style.height = PH + 'px'
     }
+  const TableBlock: HTMLHtmlElement | null = document.querySelector('#flink-yarn-table-block > .el-table')
+  if (TableBlock != null) {
+    // console.log('change table block')
+    TableBlock.style.height = (PH - 80 - 80) + 'px'
+  }
+
 }
 
 export function changeTheme(isDark: boolean) {
@@ -37,16 +43,3 @@ export function datetimeFmt(date: Date): string {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
 }
 
-export function closeLoginBox() {
-    const loginBox: HTMLHtmlElement | null = document.querySelector('#login-box')
-    if (loginBox != null) {
-        loginBox.style.display = 'none'
-    }
-}
-
-export function showLoginBox() {
-    const loginBox: HTMLHtmlElement | null = document.querySelector('#login-box')
-    if (loginBox != null) {
-        loginBox.style.display = 'flex'
-    }
-}
