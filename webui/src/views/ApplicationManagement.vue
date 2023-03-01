@@ -29,6 +29,11 @@
           </el-link>
         </template>
       </el-table-column>
+      <el-table-column prop="trackingUrl" label="操作">
+        <template #default="scope">
+          <el-button @click="handleCancelJob(scope.row)" circle :disabled="scope.row.state !== 'RUNNING'">STOP</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </el-row>
 
@@ -38,9 +43,10 @@
 <script lang="ts" setup>
 
 import {onMounted, ref, watch} from "vue"
-import {listFlinkYarnApplications} from "@/api"
+import {cancelFlinkYarnApplication, listFlinkYarnApplications} from "@/api"
 import type {YarnApplication} from "@/domain"
 import {handlePageResize} from "@/utils"
+import {ElMessage} from "element-plus"
 
 const AllFlinkYarnApplications = ref<Array<YarnApplication>>([])
 const CurrentFlinkYarnApplications = ref<Array<YarnApplication>>([])
@@ -53,6 +59,7 @@ onMounted(async () => {
     AllFlinkYarnApplications.value = []
     for (let app of data) {
       handleAppStateType(app)
+      handleAppTrackingUrl(app)
       AllFlinkYarnApplications.value?.push(app)
     }
     CurrentFlinkYarnApplications.value = AllFlinkYarnApplications.value
@@ -105,4 +112,27 @@ function handleAppStateType(app: YarnApplication) :void{
   }
   app.stateType = "info"
 }
+
+function handleAppTrackingUrl(app: YarnApplication): void {
+  const url = new URL(app.trackingUrl)
+  app.trackingUrl = url.protocol + "//" + "yarn.lqservice.cn" + url.pathname
+}
+
+async function handleCancelJob(app :YarnApplication){
+  const result = await cancelFlinkYarnApplication(app.timestamp, app.id)
+  if (result === true) {
+    ElMessage({
+      type: "success",
+      message: "成功结束任务"
+    })
+    app.state = "KILLED"
+  }else {
+    ElMessage({
+      type: "warning",
+      message: result
+    })
+  }
+
+}
+
 </script>

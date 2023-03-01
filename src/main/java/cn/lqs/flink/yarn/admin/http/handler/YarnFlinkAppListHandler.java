@@ -26,7 +26,9 @@ public class YarnFlinkAppListHandler implements Function<RoutingContext, Future<
   @Override
   public Future<List<FlinkYarnAppInfo>> apply(RoutingContext routingContext) {
     try {
+      long start = System.currentTimeMillis();
       List<ApplicationReport> applicationReports = yarnManager.listFlinkApplication();
+      log.info("Got yarn application reports cost [{}]ms.", System.currentTimeMillis() - start);
       if (applicationReports == null) {
         return Future.failedFuture(new YarnException("can not connect to yarn cluster"));
       }

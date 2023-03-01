@@ -1,6 +1,7 @@
 package cn.lqs.flink.yarn.admin.hdfs;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ApplicationReport;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.exceptions.YarnException;
@@ -40,7 +41,12 @@ public class YarnManager implements Closeable {
     if (yarn == null) {
       return null;
     }
+
     return yarn.getApplications(flinkApplicationTypeSet);
+  }
+
+  public void cancelFlinkApplication(long clusterTimestamp, int id) throws IOException, YarnException {
+    yarn.killApplication(ApplicationId.newInstance(clusterTimestamp, id));
   }
 
 }

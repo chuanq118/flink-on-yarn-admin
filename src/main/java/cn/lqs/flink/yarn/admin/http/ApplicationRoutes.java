@@ -43,6 +43,8 @@ public class ApplicationRoutes {
       .respond(new JarListHandler(hdfsJarManager));
     router.get(PREFIX + "/flink/applications")
       .respond(new YarnFlinkAppListHandler(yarnManager));
+    router.get(PREFIX + "/flink/application/kill/:id/:timestamp")
+      .respond(new YarnFlinkAppKillHandler(yarnManager));
 
     // 在 post 请求前安装对请求体的处理器
     router.post(PREFIX + "/*").handler(BodyHandler.create());

@@ -66,3 +66,11 @@ export async function listFlinkYarnApplications(): Promise<null | Array<YarnAppl
   return null
 }
 
+export async function cancelFlinkYarnApplication(timestamp: bigint, id: number): Promise<true | string> {
+  const response = await axIns.get(`/api/flink/application/${id}/${timestamp}`)
+  if (isSuccessStatusCode(response.status)) {
+    return true
+  }
+  return <string>response.data
+}
+
