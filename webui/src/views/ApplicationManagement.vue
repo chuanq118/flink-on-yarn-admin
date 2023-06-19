@@ -23,7 +23,8 @@
       </el-table-column>
       <el-table-column prop="trackingUrl" label="网页监控">
         <template #default="scope">
-          <el-link class="my-el-link" :href="scope.row.trackingUrl">
+          <el-link class="my-el-link" @click="handleOpenUI(scope.row.trackingUrl)">
+            <span><el-icon><Link/></el-icon></span>
             <span v-if="scope.row.state === 'RUNNING'">Monitor&nbsp;UI</span>
             <span v-else>History&nbsp;UI</span>
           </el-link>
@@ -45,8 +46,10 @@
 import {onMounted, ref, watch} from "vue"
 import {cancelFlinkYarnApplication, listFlinkYarnApplications} from "@/api"
 import type {YarnApplication} from "@/domain"
-import {handlePageResize} from "@/utils"
+import {handlePageResize, ReplaceHostnameWithOutboundIp} from "@/utils"
 import {ElMessage} from "element-plus"
+
+import {Link} from "@element-plus/icons-vue"
 
 const AllFlinkYarnApplications = ref<Array<YarnApplication>>([])
 const CurrentFlinkYarnApplications = ref<Array<YarnApplication>>([])
@@ -102,7 +105,7 @@ function handleAppStateType(app: YarnApplication) :void{
     app.stateType = "danger"
     return
   }
-  if (app.state == "FINISHED") {
+  if (app.state == "RUNNING") {
     app.stateType = "success"
     return
   }
@@ -114,8 +117,8 @@ function handleAppStateType(app: YarnApplication) :void{
 }
 
 function handleAppTrackingUrl(app: YarnApplication): void {
-  const url = new URL(app.trackingUrl)
-  app.trackingUrl = url.protocol + "//" + "yarn.lqservice.cn" + url.pathname
+  // const url = new URL(app.trackingUrl)
+  // app.trackingUrl = url.protocol + "//" + "host:port" + url.pathname
 }
 
 async function handleCancelJob(app :YarnApplication){
@@ -133,6 +136,10 @@ async function handleCancelJob(app :YarnApplication){
     })
   }
 
+}
+
+function handleOpenUI(url: string) {
+  window.open(ReplaceHostnameWithOutboundIp(url))
 }
 
 </script>

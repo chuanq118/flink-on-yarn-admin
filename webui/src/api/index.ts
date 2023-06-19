@@ -32,7 +32,7 @@ axIns.interceptors.response.use(function (response) {
             return
         }
         ElNotification({
-            title: 'Clash Server 返回了错误的响应码',
+            title: 'flink-yarn Server 返回了错误的响应码',
             message: `${error.response.status}, ${error.response.data}`,
             type: 'error',
         })
@@ -41,7 +41,7 @@ axIns.interceptors.response.use(function (response) {
         // `error.request` 在浏览器中是 XMLHttpRequest 的实例，
         // 而在node.js中是 http.ClientRequest 的实例
         ElNotification({
-            title: 'Clash Server 没有响应请求',
+            title: 'Server 没有响应请求',
             message: `${JSON.stringify(error.request)}`,
             type: 'error',
         })

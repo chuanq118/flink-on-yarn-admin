@@ -24,6 +24,7 @@ public class FlinkRestDispatcher extends AbstractVerticle {
   public void start(Promise<Void> promise) throws FailLoadConfigurationException, IOException {
     // 创建并启动 web server
     HttpServer server = vertx.createHttpServer();
+    log.info("Try create web server...");
     server.requestHandler(ApplicationRoutes.build(vertx, GlobalConfig))
       .listen(Integer.parseInt(GlobalConfig.get(SERVER_PORT)), GlobalConfig.get(SERVER_HOST),
         http -> {

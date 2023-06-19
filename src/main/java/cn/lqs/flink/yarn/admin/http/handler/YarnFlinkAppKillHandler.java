@@ -28,6 +28,7 @@ public class YarnFlinkAppKillHandler implements Function<RoutingContext, Future<
       id = Integer.parseInt(routingContext.pathParam("id"));
       timestamp = Long.parseLong(routingContext.pathParam("timestamp"));
     } catch (Exception e) {
+      log.error("Kill Flink Application 解析参数错误", e);
       return Future.failedFuture(e);
     }
     try {

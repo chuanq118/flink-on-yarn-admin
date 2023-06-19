@@ -3,7 +3,6 @@ package cn.lqs.flink.yarn.admin;
 import cn.lqs.flink.yarn.admin.hdfs.ConfigurationLoader;
 import cn.lqs.flink.yarn.admin.hdfs.FailLoadConfigurationException;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 import org.apache.hadoop.conf.Configuration;
 
 /**
@@ -23,9 +22,9 @@ public class FlinkYarnAdminLauncher {
 
 
   public static void main(String[] args) {
-    int workers = Runtime.getRuntime().availableProcessors() * 2;
-    System.out.printf("Start vertx service with [%s] workers.%n", workers);
-    Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(workers));
+    // int workers = Runtime.getRuntime().availableProcessors();
+    // System.out.printf("Start vertx service with [%s] workers.%n", workers);
+    Vertx vertx = Vertx.vertx();
     vertx.deployVerticle(new FlinkRestDispatcher());
   }
 

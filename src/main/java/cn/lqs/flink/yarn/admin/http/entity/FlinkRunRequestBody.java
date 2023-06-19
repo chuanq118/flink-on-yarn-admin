@@ -1,24 +1,21 @@
 package cn.lqs.flink.yarn.admin.http.entity;
 
-import java.util.Map;
-
 public class FlinkRunRequestBody {
 
   private String source;
   private String sink;
-  private Map<String, Object> jsonConfig;
+  private String configId;
   private String jarPath;
 
   public FlinkRunRequestBody() {
   }
 
-  public FlinkRunRequestBody(String source, String sink, Map<String, Object> jsonConfig, String jarPath) {
+  public FlinkRunRequestBody(String source, String sink, String configId, String jarPath) {
     this.source = source;
     this.sink = sink;
-    this.jsonConfig = jsonConfig;
+    this.configId = configId;
     this.jarPath = jarPath;
   }
-
 
   public void setSource(String source) {
     this.source = source;
@@ -42,22 +39,15 @@ public class FlinkRunRequestBody {
     return sink;
   }
 
-  public Map<String, Object> getJsonConfig() {
-    return jsonConfig;
+  public String getConfigId() {
+    return configId;
   }
 
-  public void setJsonConfig(Map<String, Object> jsonConfig) {
-    this.jsonConfig = jsonConfig;
+  public void setConfigId(String configId) {
+    this.configId = configId;
   }
 
   public String getJarPath() {
     return jarPath;
-  }
-
-  public String jsonConfigString() {
-    if (jsonConfig != null) {
-      return jsonConfig.toString();
-    }
-    return "";
   }
 }

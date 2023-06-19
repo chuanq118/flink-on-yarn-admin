@@ -43,3 +43,27 @@ export function datetimeFmt(date: Date): string {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
 }
 
+
+// 定义 IP 地址和主机名的对应关系
+const ipMapping: { [hostname: string]: string } = {
+  'node30': '111.56.16.62',
+  'node31': '111.56.16.62',
+  'node32': '111.56.16.62',
+  'node33': '111.56.16.62',
+  'wq31': '39.153.214.14',
+  'wq32': '39.153.214.14',
+  'wq33': '39.153.214.14'
+};
+
+export function ReplaceHostnameWithOutboundIp(url : string) :string {
+
+  // 解析 URL 获取主机名
+  const urlObj = new URL(url);
+  const hostname = urlObj.hostname;
+
+  // 替换主机名为对应的 IP 地址
+  const ip = ipMapping[hostname];
+
+  return ip ? url.replace(hostname, ip) : url;
+}
+

@@ -10,19 +10,22 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CorsHandler;
-import io.vertx.ext.web.handler.ErrorHandler;
-import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.handler.*;
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class ApplicationRoutes {
 
+  private final static Logger log = LoggerFactory.getLogger(ApplicationRoutes.class);
+
   private final static String PREFIX = "/api";
+  private final static String PREFIX_V2 = "/api/v2";
 
   public static Router build(Vertx vertx, Configuration conf) throws IOException, FailLoadConfigurationException {
     Router router = Router.router(vertx);
@@ -30,11 +33,15 @@ public class ApplicationRoutes {
     handleCors(router);
     // 配置静态 web ui
     handleWebui(router);
+    // XFrame 允许
+    // router.route().handler(XFrameHandler.create(XFrameHandler.SAMEORIGIN));
 
     // hdfs-jar / flink manager
     HdfsJarManager hdfsJarManager = HdfsJarManager.create(conf);
     FlinkScriptManager flinkScriptManager = FlinkScriptManager.parseFrom(conf);
     YarnManager yarnManager = new YarnManager(conf);
+
+    router.get("/").respond(ctx -> ctx.redirect("/ui"));
 
     // 打印配置信息
     router.get(PREFIX + "/app/config")
@@ -63,6 +70,7 @@ public class ApplicationRoutes {
     // 默认此处返回所有的错误信息 -> 可更换到 FailureHandler(自定义)
     router.route(PREFIX + "/*").failureHandler(ErrorHandler.create(vertx, true));
 
+    log.info("Routes build successfully!");
     return router;
   }
 
@@ -70,7 +78,7 @@ public class ApplicationRoutes {
     Set<HttpMethod> allowedHttpMethods = new HashSet<>(2);
     allowedHttpMethods.add(HttpMethod.GET);
     allowedHttpMethods.add(HttpMethod.POST);
-    router.route().handler(CorsHandler.create()
+    router.route("/*").handler(CorsHandler.create()
       .addOrigin("*")
       .allowedHeader("*")
       .allowedMethods(allowedHttpMethods)
